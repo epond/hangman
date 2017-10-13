@@ -9,7 +9,9 @@ import System.Random (randomRIO)
 
 main :: IO ()
 main = do
-  putStrLn "hello world"
+    word <- randomWord'
+    let puzzle = freshPuzzle (fmap toLower word)
+    runGame puzzle
 
 type WordList = [String]
 
@@ -90,3 +92,23 @@ gameOver (Puzzle wordToGuess _ guessed) =
            putStrLn $ "The word was: " ++ wordToGuess
            exitSuccess
     else return ()
+
+gameWin :: Puzzle -> IO ()
+gameWin (Puzzle _ filledInSoFar _) =
+    if all isJust filledInSoFar then
+        do putStrLn "You win!"
+           exitSuccess
+    else return ()
+
+runGame :: Puzzle -> IO ()
+runGame puzzle = forever $ do
+    gameOver puzzle
+    gameWin puzzle
+    putStrLn $
+        "Current puzzle is: " ++ show puzzle
+    putStr "Guess a letter: "
+    guess <- getLine
+    case guess of
+        [c] -> handleGuess puzzle c >>= runGame
+        _ ->
+            putStrLn "Your guess must be a single character"
