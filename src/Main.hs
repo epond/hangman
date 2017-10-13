@@ -21,10 +21,13 @@ allWords = do
     return (lines dict)
 
 minWordLength :: Int
-minWordLength = 5
+minWordLength = 2
 
 maxWordLength :: Int
-maxWordLength = 9
+maxWordLength = 3
+
+maxGuesses :: Int
+maxGuesses = 7
 
 gameWords :: IO WordList
 gameWords = do
@@ -36,7 +39,8 @@ gameWords = do
 randomWord :: WordList -> IO String
 randomWord wl = do
     randomIndex <- randomRIO (0, (length wl) - 1)
-    return $ wl !! randomIndex
+    -- ugly but better than throwing an exception
+    return $ if (length wl) > 0 then wl !! randomIndex else "empty"
 
 randomWord' :: IO String
 randomWord' = gameWords >>= randomWord
@@ -87,7 +91,7 @@ handleGuess puzzle guess = do
 
 gameOver :: Puzzle -> IO ()
 gameOver (Puzzle wordToGuess _ guessed) =
-    if (length guessed) > 7 then
+    if (length guessed) > maxGuesses then
         do putStrLn "You lose!"
            putStrLn $ "The word was: " ++ wordToGuess
            exitSuccess
