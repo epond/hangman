@@ -24,7 +24,7 @@ minWordLength :: Int
 minWordLength = 2
 
 maxWordLength :: Int
-maxWordLength = 3
+maxWordLength = 2
 
 maxGuesses :: Int
 maxGuesses = 7
@@ -34,7 +34,7 @@ gameWords = do
     aw <- allWords
     return (filter gameLength aw)
     where gameLength w = let l = length (w :: String)
-                         in l >= minWordLength && l < maxWordLength
+                         in l >= minWordLength && l <= maxWordLength
 
 randomWord :: WordList -> IO String
 randomWord wl = do
