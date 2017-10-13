@@ -13,12 +13,12 @@ main = do
     let puzzle = freshPuzzle (fmap toLower word)
     runGame puzzle
 
-type WordList = [String]
+newtype WordList = WordList [String] deriving (Eq, Show)
 
 allWords :: IO WordList
 allWords = do
     dict <- readFile "data/dict.txt"
-    return (lines dict)
+    return $ WordList (lines dict)
 
 minWordLength :: Int
 minWordLength = 2
@@ -31,13 +31,13 @@ maxGuesses = 7
 
 gameWords :: IO WordList
 gameWords = do
-    aw <- allWords
-    return (filter gameLength aw)
+    (WordList aw) <- allWords
+    return $ WordList (filter gameLength aw)
     where gameLength w = let l = length (w :: String)
                          in l >= minWordLength && l <= maxWordLength
 
 randomWord :: WordList -> IO String
-randomWord wl = do
+randomWord (WordList wl) = do
     randomIndex <- randomRIO (0, (length wl) - 1)
     -- ugly but better than throwing an exception
     return $ if (length wl) > 0 then wl !! randomIndex else "empty"
